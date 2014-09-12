@@ -28,26 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.logTimelineView = new Cap10Slog.View.LogTimelineView();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.splitter = new System.Windows.Forms.Splitter();
+            this.logTimelineView = new Cap10Slog.View.LogTimelineView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // logTimelineView
-            // 
-            this.logTimelineView.AllowDrop = true;
-            this.logTimelineView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logTimelineView.Location = new System.Drawing.Point(0, 0);
-            this.logTimelineView.LogFileCollection = null;
-            this.logTimelineView.Name = "logTimelineView";
-            this.logTimelineView.Size = new System.Drawing.Size(882, 337);
-            this.logTimelineView.TabIndex = 2;
-            this.logTimelineView.DragDrop += new System.Windows.Forms.DragEventHandler(this.logTimelineView1_DragDrop);
-            this.logTimelineView.DragEnter += new System.Windows.Forms.DragEventHandler(this.logTimelineView1_DragEnter);
             // 
             // splitContainer
             // 
@@ -76,6 +64,18 @@
             this.splitter.TabIndex = 0;
             this.splitter.TabStop = false;
             // 
+            // logTimelineView
+            // 
+            this.logTimelineView.AllowDrop = true;
+            this.logTimelineView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logTimelineView.Location = new System.Drawing.Point(0, 0);
+            this.logTimelineView.LogFileCollection = null;
+            this.logTimelineView.Name = "logTimelineView";
+            this.logTimelineView.Size = new System.Drawing.Size(882, 337);
+            this.logTimelineView.TabIndex = 0;
+            this.logTimelineView.DragDrop += new System.Windows.Forms.DragEventHandler(this.logTimelineView1_DragDrop);
+            this.logTimelineView.DragEnter += new System.Windows.Forms.DragEventHandler(this.logTimelineView1_DragEnter);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -95,9 +95,9 @@
 
         #endregion
 
-        private View.LogTimelineView logTimelineView;
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Splitter splitter;
+        private View.LogTimelineView logTimelineView;
     }
 }
 

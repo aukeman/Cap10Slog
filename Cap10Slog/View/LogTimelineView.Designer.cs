@@ -30,11 +30,7 @@
         {
             this.vScrollBar = new System.Windows.Forms.VScrollBar();
             this.hScrollBar = new System.Windows.Forms.HScrollBar();
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.splitter = new System.Windows.Forms.Splitter();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-            this.splitContainer.Panel2.SuspendLayout();
-            this.splitContainer.SuspendLayout();
+            this.panel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // vScrollBar
@@ -60,49 +56,28 @@
             this.hScrollBar.Size = new System.Drawing.Size(768, 17);
             this.hScrollBar.TabIndex = 1;
             // 
-            // splitContainer
+            // panel
             // 
-            this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer.Location = new System.Drawing.Point(0, 4);
-            this.splitContainer.Name = "splitContainer";
-            // 
-            // splitContainer.Panel1
-            // 
-            this.splitContainer.Panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.splitContainer.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer_Panel1_Paint);
-            // 
-            // splitContainer.Panel2
-            // 
-            this.splitContainer.Panel2.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.splitContainer.Panel2.Controls.Add(this.splitter);
-            this.splitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer_Panel2_Paint);
-            this.splitContainer.Size = new System.Drawing.Size(768, 295);
-            this.splitContainer.SplitterDistance = 136;
-            this.splitContainer.TabIndex = 2;
-            // 
-            // splitter
-            // 
-            this.splitter.Location = new System.Drawing.Point(0, 0);
-            this.splitter.Name = "splitter";
-            this.splitter.Size = new System.Drawing.Size(3, 295);
-            this.splitter.TabIndex = 99;
-            this.splitter.TabStop = false;
+            this.panel.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panel.Location = new System.Drawing.Point(0, 0);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(768, 299);
+            this.panel.TabIndex = 2;
+            this.panel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel_Paint);
             // 
             // LogTimelineView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.splitContainer);
+            this.Controls.Add(this.panel);
             this.Controls.Add(this.hScrollBar);
             this.Controls.Add(this.vScrollBar);
             this.DoubleBuffered = true;
             this.Name = "LogTimelineView";
             this.Size = new System.Drawing.Size(787, 319);
-            this.splitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-            this.splitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -111,7 +86,6 @@
 
         private System.Windows.Forms.VScrollBar vScrollBar;
         private System.Windows.Forms.HScrollBar hScrollBar;
-        private System.Windows.Forms.SplitContainer splitContainer;
-        private System.Windows.Forms.Splitter splitter;
+        private System.Windows.Forms.Panel panel;
     }
 }

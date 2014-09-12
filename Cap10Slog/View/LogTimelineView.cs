@@ -24,9 +24,7 @@ namespace Cap10Slog.View
               System.Reflection.BindingFlags.NonPublic |
               System.Reflection.BindingFlags.Instance);
 
-            aProp.SetValue(this.splitContainer.Panel1, true, null);
-            aProp.SetValue(this.splitContainer.Panel2, true, null); 
-
+            aProp.SetValue(this.panel, true, null);
         }
 
         private LogFileCollection logFileCollection;
@@ -62,13 +60,17 @@ namespace Cap10Slog.View
 
         }
 
-        private void splitContainer_Panel1_Paint(object sender, PaintEventArgs e)
+        private void panel_Paint(object sender, PaintEventArgs e)
         {
             if (this.logFileCollection != null &&
                  0 < this.logFileCollection.LogRecords.Length)
             {
-                Brush brush = new SolidBrush(splitContainer.Panel1.ForeColor);
-                Font font = splitContainer.Panel1.Font;
+                Brush brush = new SolidBrush(panel.ForeColor);
+                Pen pen = new Pen(brush);
+                Font font = panel.Font;
+
+                SizeF timeLabelSize = e.Graphics.MeasureString("0000-00-00 00:00:00.000", font);
+                SizeF ThreadLabelSize = e.Graphics.MeasureString("0000", font);
 
                 DateTime time = new DateTime(
                     this.LogFileCollection.EarliestTime.Year, this.LogFileCollection.EarliestTime.Month, this.LogFileCollection.EarliestTime.Day,
@@ -78,7 +80,7 @@ namespace Cap10Slog.View
 
                 int numberOfSecondsRendered = 0;
                 float y = 0.0f;
-                while ( y < this.splitContainer.Panel1.Height )
+                while ( y < panel.Height )
                 {
                     e.Graphics.DrawString(time.ToString("yyyy-MM-dd HH:mm:ss.fff"), font, brush, 0, y);
                     time = time.AddSeconds(1.0);
@@ -88,26 +90,28 @@ namespace Cap10Slog.View
                 }
 
                 this.vScrollBar.LargeChange = numberOfSecondsRendered;
+
+                e.Graphics.DrawLine(pen, timeLabelSize.Width, 0, timeLabelSize.Width, panel.Height);
             }
         }
 
-        private void splitContainer_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-            if (this.logFileCollection != null &&
-                 0 < this.logFileCollection.LogRecords.Length)
-            {
-                Brush brush = new SolidBrush(splitContainer.Panel1.ForeColor);
-                Font font = splitContainer.Panel1.Font;
+        //private void splitContainer_Panel2_Paint(object sender, PaintEventArgs e)
+        //{
+        //    if (this.logFileCollection != null &&
+        //         0 < this.logFileCollection.LogRecords.Length)
+        //    {
+        //        Brush brush = new SolidBrush(splitContainer.Panel1.ForeColor);
+        //        Font font = splitContainer.Panel1.Font;
 
-                float x = 0.0f;
-                foreach (LogThread logThread in this.logFileCollection.LogThreads)
-                {
-                    e.Graphics.DrawString(logThread.ThreadID, font, brush, x, 0);
+        //        float x = 0.0f;
+        //        foreach (LogThread logThread in this.logFileCollection.LogThreads)
+        //        {
+        //            e.Graphics.DrawString(logThread.ThreadID, font, brush, x, 0);
 
-                    x += e.Graphics.MeasureString("XXXXX", font).Width;
-                }
-            }
-        }
+        //            x += e.Graphics.MeasureString("XXXXX", font).Width;
+        //        }
+        //    }
+        //}
 
         private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
         {

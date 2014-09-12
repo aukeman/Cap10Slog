@@ -32,21 +32,12 @@ namespace Cap10Slog
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                logTimelineView.SuspendLayout();
+                LogFile[] logFiles =
+                    Array.ConvertAll<string, LogFile>(
+                        e.Data.GetData(DataFormats.FileDrop) as string[],
+                        filepath => MainOutputParser.Parse(filepath));
 
-                try
-                {
-                    LogFile[] logFiles =
-                        Array.ConvertAll<string, LogFile>(
-                            e.Data.GetData(DataFormats.FileDrop) as string[],
-                            filepath => MainOutputParser.Parse(filepath));
-
-                    logTimelineView.LogFileCollection = new LogFileCollection(logFiles);
-                }
-                finally
-                {
-                    logTimelineView.ResumeLayout();
-                }
+                logTimelineView.LogFileCollection = new LogFileCollection(logFiles);
             }
         }
 
