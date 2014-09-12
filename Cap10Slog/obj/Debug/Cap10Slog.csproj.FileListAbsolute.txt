@@ -1,0 +1,10 @@
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\bin\Debug\Cap10Slog.exe.config
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\obj\Debug\Cap10Slog.Form1.resources
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\obj\Debug\Cap10Slog.Properties.Resources.resources
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\obj\Debug\Cap10Slog.csproj.GenerateResource.Cache
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\bin\Debug\Cap10Slog.exe
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\bin\Debug\Cap10Slog.pdb
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\obj\Debug\Cap10Slog.exe
+c:\users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\obj\Debug\Cap10Slog.pdb
+C:\Users\jaukeman\documents\visual studio 2013\Projects\Cap10Slog\Cap10Slog\obj\Debug\Cap10Slog.View.LogTimelineView.resources
+C:\Users\jaukeman\Documents\Visual Studio 2013\Projects\Cap10Slog\Cap10Slog\obj\Debug\Cap10Slog.csprojResolveAssemblyReference.cache
