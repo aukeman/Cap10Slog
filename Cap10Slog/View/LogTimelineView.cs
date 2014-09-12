@@ -70,7 +70,7 @@ namespace Cap10Slog.View
                 Font font = panel.Font;
 
                 SizeF timeLabelSize = e.Graphics.MeasureString("0000-00-00 00:00:00.000", font);
-                SizeF ThreadLabelSize = e.Graphics.MeasureString("0000", font);
+                SizeF threadLabelSize = e.Graphics.MeasureString("0000", font);
 
                 DateTime time = new DateTime(
                     this.LogFileCollection.EarliestTime.Year, this.LogFileCollection.EarliestTime.Month, this.LogFileCollection.EarliestTime.Day,
@@ -79,19 +79,42 @@ namespace Cap10Slog.View
                 time = time.AddSeconds(1.0 * this.vScrollBar.Value);
 
                 int numberOfSecondsRendered = 0;
+                float x = 0.0f;
                 float y = 0.0f;
                 while ( y < panel.Height )
                 {
-                    e.Graphics.DrawString(time.ToString("yyyy-MM-dd HH:mm:ss.fff"), font, brush, 0, y);
+                    e.Graphics.DrawString(time.ToString("yyyy-MM-dd HH:mm:ss.fff"), font, brush, x, y);
                     time = time.AddSeconds(1.0);
 
-                    y += 2*font.GetHeight(e.Graphics);
+                    y += 2*timeLabelSize.Height;
                     ++numberOfSecondsRendered;
                 }
 
+                e.Graphics.DrawLine(pen, timeLabelSize.Width, 0, timeLabelSize.Width, panel.Height);
+
+                e.Graphics.RotateTransform(90);
+
+                y = -(timeLabelSize.Width+threadLabelSize.Height+2);
+                int threadIdx = 0;
+                foreach (LogThread logThread in this.logFileCollection.LogThreads)
+                {
+                    if (this.hScrollBar.Value <= threadIdx)
+                    {
+                        e.Graphics.DrawString(logThread.ThreadID, font, brush, x, y);
+                        y -= threadLabelSize.Height;
+                    }
+
+                    if ( this.panel.Width < -y )
+                    {
+                        break;
+                    }
+
+                    ++threadIdx;
+                }
+
+
                 this.vScrollBar.LargeChange = numberOfSecondsRendered;
 
-                e.Graphics.DrawLine(pen, timeLabelSize.Width, 0, timeLabelSize.Width, panel.Height);
             }
         }
 
@@ -103,17 +126,15 @@ namespace Cap10Slog.View
         //        Brush brush = new SolidBrush(splitContainer.Panel1.ForeColor);
         //        Font font = splitContainer.Panel1.Font;
 
-        //        float x = 0.0f;
-        //        foreach (LogThread logThread in this.logFileCollection.LogThreads)
-        //        {
-        //            e.Graphics.DrawString(logThread.ThreadID, font, brush, x, 0);
-
-        //            x += e.Graphics.MeasureString("XXXXX", font).Width;
-        //        }
         //    }
         //}
 
         private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
+        {
+            this.Refresh();
+        }
+
+        private void hScrollBar_Scroll(object sender, ScrollEventArgs e)
         {
             this.Refresh();
         }
