@@ -56,9 +56,19 @@ namespace Cap10Slog.View
             get { return 1.0f; }
         }
 
-        public float TimeLabelSpacing
+        public float TimeLabelVerticalSpacing
         {
             get { return 2.0f; }
+        }
+
+        public float ThreadLabelHorizontalSpacing
+        {
+            get { return 2.0f; }
+        }
+
+        public float VerticalPixelsPerSecond
+        {
+            get { return this.TimeLabelVerticalSpacing * this.TimeLabelSize.Height / this.SecondsPerLabel; }
         }
 
         public LogTimelineView()
@@ -87,16 +97,16 @@ namespace Cap10Slog.View
 
                 if (this.logFileCollection != null &&
                     0 < this.logFileCollection.LogRecords.Length)
-                {               
+                {
                     this.hScrollBar.Minimum = 0;
                     this.hScrollBar.Maximum = this.logFileCollection.LogThreads.Length - 1;
 
                     this.vScrollBar.Minimum = 0;
-                    this.vScrollBar.Maximum = (int)((this.logFileCollection.LatestTime.Ticks- this.logFileCollection.EarliestTime.Ticks)/TimeSpan.TicksPerSecond);
+                    this.vScrollBar.Maximum = (int)((this.logFileCollection.LatestTime.Ticks - this.logFileCollection.EarliestTime.Ticks) / TimeSpan.TicksPerSecond);
 
                     this.vScrollBar.SmallChange = 1;
 
-                    this.EarliestTimeAvailable = 
+                    this.EarliestTimeAvailable =
                         new DateTime(
                             this.LogFileCollection.EarliestTime.Year, this.LogFileCollection.EarliestTime.Month, this.LogFileCollection.EarliestTime.Day,
                             this.LogFileCollection.EarliestTime.Hour, this.LogFileCollection.EarliestTime.Minute, this.LogFileCollection.EarliestTime.Second);
@@ -117,12 +127,14 @@ namespace Cap10Slog.View
                     this.vScrollBar.Maximum = 0;
 
                     this.EarliestTimeAvailable = DateTime.MinValue;
-                    this.LatestTimeAvailable = DateTime.MaxValue;
+                    this.LatestTimeAvailable = DateTime.MinValue;
+
+                    this.EarliestTimeRendered = DateTime.MinValue;
+                    this.LatestTimeAvailable = DateTime.MinValue;
                 }
 
                 this.Refresh();
             }
-
         }
 
         private void panel_Paint(object sender, PaintEventArgs e)
@@ -145,21 +157,41 @@ namespace Cap10Slog.View
                     e.Graphics.DrawString(time.ToString("yyyy-MM-dd HH:mm:ss.fff"), font, brush, x, y);
                     time = time.AddSeconds( this.SecondsPerLabel );
 
-                    y += this.TimeLabelSpacing*this.TimeLabelSize.Height;
+                    y += this.TimeLabelVerticalSpacing*this.TimeLabelSize.Height;
                 }
 
                 e.Graphics.DrawLine(pen, this.TimeLabelSize.Width, 0, this.TimeLabelSize.Width, panel.Height);
 
                 e.Graphics.RotateTransform(90);
 
-                y = -(this.TimeLabelSize.Width+this.ThreadLabelSize.Height+2);
+                Rectangle r = new Rectangle();
+
+                y = -(this.TimeLabelSize.Width+(this.ThreadLabelSize.Height*this.ThreadLabelHorizontalSpacing));
                 int threadIdx = 0;
                 foreach (LogThread logThread in this.logFileCollection.LogThreads)
                 {
                     if (this.hScrollBar.Value <= threadIdx)
                     {
                         e.Graphics.DrawString(logThread.ThreadID, font, brush, x, y);
-                        y -= this.ThreadLabelSize.Height;
+                        y -= (this.ThreadLabelSize.Height*this.ThreadLabelHorizontalSpacing);
+
+                        foreach (LogRecord logRecord in logThread.LogRecords)
+                        {
+                            if ( this.EarliestTimeRendered <= logRecord.Time )
+                            {
+                                r.X = (int)Math.Floor(YCoordinateFromTime(logRecord.Time) - 10);
+                                r.Y = (int)(Math.Floor(y - 10));
+                                r.Width = 10;
+                                r.Height = 10;
+
+                                e.Graphics.FillEllipse(brush, r);
+                            }
+
+                            if (this.LatestTimeRendered < logRecord.Time )
+                            {
+                                break;
+                            }
+                        }
                     }
 
                     if ( this.panel.Width < -y )
@@ -189,9 +221,7 @@ namespace Cap10Slog.View
 
         private float YCoordinateFromTime(DateTime t)
         {
-            float result = 0.0f;
-
-            return result;
+            return this.VerticalPixelsPerSecond * (t.Ticks - this.EarliestTimeRendered.Ticks) / TimeSpan.TicksPerSecond;
         }
 
         private void UpdateEarliestAndLatestRenderedTimes()
@@ -203,8 +233,7 @@ namespace Cap10Slog.View
             
             this.EarliestTimeRendered = this.EarliestTimeAvailable.AddSeconds(1.0 * this.vScrollBar.Value);
 
-            float numberOfPixelsPerSecond = this.TimeLabelSpacing * this.TimeLabelSize.Height / this.SecondsPerLabel;
-            float numberOfSecondsRendered = this.panel.Height / numberOfPixelsPerSecond;
+            float numberOfSecondsRendered = this.panel.Height / this.VerticalPixelsPerSecond;
 
             this.LatestTimeRendered = this.EarliestTimeRendered.AddSeconds( Math.Ceiling(numberOfSecondsRendered) );
 
