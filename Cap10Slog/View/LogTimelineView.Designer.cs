@@ -43,7 +43,7 @@
             this.vScrollBar.Name = "vScrollBar";
             this.vScrollBar.Size = new System.Drawing.Size(17, 295);
             this.vScrollBar.TabIndex = 0;
-            this.vScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar_Scroll);
+            this.vScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.scrollBar_Scroll);
             // 
             // hScrollBar
             // 
@@ -55,7 +55,7 @@
             this.hScrollBar.Name = "hScrollBar";
             this.hScrollBar.Size = new System.Drawing.Size(768, 17);
             this.hScrollBar.TabIndex = 1;
-            this.hScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScrollBar_Scroll);
+            this.hScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.scrollBar_Scroll);
             // 
             // panel
             // 
@@ -79,6 +79,7 @@
             this.DoubleBuffered = true;
             this.Name = "LogTimelineView";
             this.Size = new System.Drawing.Size(787, 319);
+            this.SizeChanged += new System.EventHandler(this.LogTimelineView_SizeChanged);
             this.ResumeLayout(false);
 
         }

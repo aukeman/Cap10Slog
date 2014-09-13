@@ -14,6 +14,53 @@ namespace Cap10Slog.View
 {
     public partial class LogTimelineView : UserControl
     {
+
+        public DateTime EarliestTimeAvailable
+        {
+            get;
+            private set;
+        }
+
+        public DateTime LatestTimeAvailable
+        {
+            get;
+            private set;
+        }
+
+        public DateTime EarliestTimeRendered
+        {
+            get;
+            private set;
+        }
+
+        public DateTime LatestTimeRendered
+        {
+            get;
+            private set;
+        }
+
+        public SizeF TimeLabelSize
+        {
+            get;
+            private set;
+        }
+
+        public SizeF ThreadLabelSize
+        {
+            get;
+            private set;
+        }
+
+        public float SecondsPerLabel
+        {
+            get { return 1.0f; }
+        }
+
+        public float TimeLabelSpacing
+        {
+            get { return 2.0f; }
+        }
+
         public LogTimelineView()
         {
             InitializeComponent();
@@ -25,6 +72,9 @@ namespace Cap10Slog.View
               System.Reflection.BindingFlags.Instance);
 
             aProp.SetValue(this.panel, true, null);
+
+            this.TimeLabelSize = SizeF.Empty;
+            this.ThreadLabelSize = SizeF.Empty;
         }
 
         private LogFileCollection logFileCollection;
@@ -37,7 +87,7 @@ namespace Cap10Slog.View
 
                 if (this.logFileCollection != null &&
                     0 < this.logFileCollection.LogRecords.Length)
-                {
+                {               
                     this.hScrollBar.Minimum = 0;
                     this.hScrollBar.Maximum = this.logFileCollection.LogThreads.Length - 1;
 
@@ -45,6 +95,18 @@ namespace Cap10Slog.View
                     this.vScrollBar.Maximum = (int)((this.logFileCollection.LatestTime.Ticks- this.logFileCollection.EarliestTime.Ticks)/TimeSpan.TicksPerSecond);
 
                     this.vScrollBar.SmallChange = 1;
+
+                    this.EarliestTimeAvailable = 
+                        new DateTime(
+                            this.LogFileCollection.EarliestTime.Year, this.LogFileCollection.EarliestTime.Month, this.LogFileCollection.EarliestTime.Day,
+                            this.LogFileCollection.EarliestTime.Hour, this.LogFileCollection.EarliestTime.Minute, this.LogFileCollection.EarliestTime.Second);
+
+                    this.LatestTimeAvailable =
+                        new DateTime(
+                            this.LogFileCollection.LatestTime.Year, this.LogFileCollection.LatestTime.Month, this.LogFileCollection.LatestTime.Day,
+                            this.LogFileCollection.LatestTime.Hour, this.LogFileCollection.LatestTime.Minute, this.LogFileCollection.LatestTime.Second + 1);
+
+                    UpdateEarliestAndLatestRenderedTimes();
                 }
                 else
                 {
@@ -53,6 +115,9 @@ namespace Cap10Slog.View
 
                     this.vScrollBar.Minimum = 0;
                     this.vScrollBar.Maximum = 0;
+
+                    this.EarliestTimeAvailable = DateTime.MinValue;
+                    this.LatestTimeAvailable = DateTime.MaxValue;
                 }
 
                 this.Refresh();
@@ -69,76 +134,93 @@ namespace Cap10Slog.View
                 Pen pen = new Pen(brush);
                 Font font = panel.Font;
 
-                SizeF timeLabelSize = e.Graphics.MeasureString("0000-00-00 00:00:00.000", font);
-                SizeF threadLabelSize = e.Graphics.MeasureString("0000", font);
+                this.UpdateLabelSizes(e.Graphics, font);
+ 
+                DateTime time = this.EarliestTimeRendered;
 
-                DateTime time = new DateTime(
-                    this.LogFileCollection.EarliestTime.Year, this.LogFileCollection.EarliestTime.Month, this.LogFileCollection.EarliestTime.Day,
-                    this.LogFileCollection.EarliestTime.Hour, this.LogFileCollection.EarliestTime.Minute, this.LogFileCollection.EarliestTime.Second );
-
-                time = time.AddSeconds(1.0 * this.vScrollBar.Value);
-
-                int numberOfSecondsRendered = 0;
                 float x = 0.0f;
                 float y = 0.0f;
-                while ( y < panel.Height )
+                while ( y < panel.Height && time <= this.LatestTimeRendered)
                 {
                     e.Graphics.DrawString(time.ToString("yyyy-MM-dd HH:mm:ss.fff"), font, brush, x, y);
-                    time = time.AddSeconds(1.0);
+                    time = time.AddSeconds( this.SecondsPerLabel );
 
-                    y += 2*timeLabelSize.Height;
-                    ++numberOfSecondsRendered;
+                    y += this.TimeLabelSpacing*this.TimeLabelSize.Height;
                 }
 
-                e.Graphics.DrawLine(pen, timeLabelSize.Width, 0, timeLabelSize.Width, panel.Height);
+                e.Graphics.DrawLine(pen, this.TimeLabelSize.Width, 0, this.TimeLabelSize.Width, panel.Height);
 
                 e.Graphics.RotateTransform(90);
 
-                y = -(timeLabelSize.Width+threadLabelSize.Height+2);
+                y = -(this.TimeLabelSize.Width+this.ThreadLabelSize.Height+2);
                 int threadIdx = 0;
                 foreach (LogThread logThread in this.logFileCollection.LogThreads)
                 {
                     if (this.hScrollBar.Value <= threadIdx)
                     {
                         e.Graphics.DrawString(logThread.ThreadID, font, brush, x, y);
-                        y -= threadLabelSize.Height;
+                        y -= this.ThreadLabelSize.Height;
                     }
 
                     if ( this.panel.Width < -y )
                     {
                         break;
                     }
-
                     ++threadIdx;
                 }
-
-
-                this.vScrollBar.LargeChange = numberOfSecondsRendered;
-
             }
         }
 
-        //private void splitContainer_Panel2_Paint(object sender, PaintEventArgs e)
-        //{
-        //    if (this.logFileCollection != null &&
-        //         0 < this.logFileCollection.LogRecords.Length)
-        //    {
-        //        Brush brush = new SolidBrush(splitContainer.Panel1.ForeColor);
-        //        Font font = splitContainer.Panel1.Font;
-
-        //    }
-        //}
-
-        private void vScrollBar_Scroll(object sender, ScrollEventArgs e)
+        private void scrollBar_Scroll(object sender, ScrollEventArgs e)
         {
+            if ( sender == this.vScrollBar )
+            {
+                this.vScrollBar.Value = e.NewValue;
+                UpdateEarliestAndLatestRenderedTimes();
+            }
+
             this.Refresh();
         }
 
-        private void hScrollBar_Scroll(object sender, ScrollEventArgs e)
+        private void LogTimelineView_SizeChanged(object sender, EventArgs e)
         {
-            this.Refresh();
+            UpdateEarliestAndLatestRenderedTimes();            
         }
 
+        private float YCoordinateFromTime(DateTime t)
+        {
+            float result = 0.0f;
+
+            return result;
+        }
+
+        private void UpdateEarliestAndLatestRenderedTimes()
+        {
+            if ( this.TimeLabelSize == SizeF.Empty )
+            {
+                UpdateLabelSizes(this.panel.CreateGraphics(), this.panel.Font);
+            }
+            
+            this.EarliestTimeRendered = this.EarliestTimeAvailable.AddSeconds(1.0 * this.vScrollBar.Value);
+
+            float numberOfPixelsPerSecond = this.TimeLabelSpacing * this.TimeLabelSize.Height / this.SecondsPerLabel;
+            float numberOfSecondsRendered = this.panel.Height / numberOfPixelsPerSecond;
+
+            this.LatestTimeRendered = this.EarliestTimeRendered.AddSeconds( Math.Ceiling(numberOfSecondsRendered) );
+
+            if ( this.LatestTimeAvailable < this.LatestTimeRendered )
+            {
+                this.LatestTimeRendered = this.LatestTimeAvailable;
+            }
+
+            this.vScrollBar.LargeChange = (int)Math.Floor(numberOfSecondsRendered);
+        }
+
+        private void UpdateLabelSizes(Graphics g, Font f)
+        {
+            this.TimeLabelSize = g.MeasureString("0000-00-00 00:00:00.000", f);
+            this.ThreadLabelSize = g.MeasureString("0000", f);
+        }
 
     }
 }
