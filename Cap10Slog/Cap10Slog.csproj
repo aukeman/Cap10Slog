@@ -57,12 +57,15 @@
     <Compile Include="Parser\MainOutputParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\LogRecordIcon\LogRecordIconFactory.cs" />
+    <Compile Include="View\LogRecordIcon\LogRecordIcons.cs" />
     <Compile Include="View\LogTimelineView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="View\LogTimelineView.Designer.cs">
       <DependentUpon>LogTimelineView.cs</DependentUpon>
     </Compile>
+    <Compile Include="View\LogRecordIcon\ILogRecordIcon.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

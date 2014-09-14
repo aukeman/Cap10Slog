@@ -8,12 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using Cap10Slog.View.LogRecordIcon;
+
 using Cap10Slog.Model;
 
 namespace Cap10Slog.View
 {
     public partial class LogTimelineView : UserControl
     {
+
+        private Dictionary<string, ILogRecordIcon> threadIcons = new Dictionary<string, ILogRecordIcon>();
 
         public DateTime EarliestTimeAvailable
         {
@@ -118,6 +122,11 @@ namespace Cap10Slog.View
                     this.LatestTimeAvailable = this.LatestTimeAvailable.AddSeconds(1.0);
 
                     UpdateEarliestAndLatestRenderedTimes();
+
+                    foreach (LogThread logThread in this.logFileCollection.LogThreads)
+                    {
+                        threadIcons.Add(logThread.ThreadID, LogRecordIconFactory.GetNext());
+                    }
                 }
                 else
                 {
@@ -198,7 +207,7 @@ namespace Cap10Slog.View
                                 r.Width = 10;
                                 r.Height = 10;
 
-                                e.Graphics.FillEllipse(brush, r);
+                                threadIcons[logThread.ThreadID].Draw(e.Graphics, r);
 
                                 lastLogRecordTimeRendered = logRecord.Time;
                             }
@@ -272,6 +281,5 @@ namespace Cap10Slog.View
             this.TimeLabelSize = g.MeasureString("0000-00-00 00:00:00.000", f);
             this.ThreadLabelSize = g.MeasureString("0000", f);
         }
-
     }
 }
