@@ -114,7 +114,8 @@ namespace Cap10Slog.View
                     this.LatestTimeAvailable =
                         new DateTime(
                             this.LogFileCollection.LatestTime.Year, this.LogFileCollection.LatestTime.Month, this.LogFileCollection.LatestTime.Day,
-                            this.LogFileCollection.LatestTime.Hour, this.LogFileCollection.LatestTime.Minute, this.LogFileCollection.LatestTime.Second + 1);
+                            this.LogFileCollection.LatestTime.Hour, this.LogFileCollection.LatestTime.Minute, this.LogFileCollection.LatestTime.Second);
+                    this.LatestTimeAvailable = this.LatestTimeAvailable.AddSeconds(1.0);
 
                     UpdateEarliestAndLatestRenderedTimes();
                 }
@@ -139,10 +140,12 @@ namespace Cap10Slog.View
 
         private void panel_Paint(object sender, PaintEventArgs e)
         {
+
             if (this.logFileCollection != null &&
                  0 < this.logFileCollection.LogRecords.Length)
             {
                 Brush brush = new SolidBrush(panel.ForeColor);
+                Brush darkColumnBrush = new SolidBrush(Color.FromArgb(0xF0, 0xF0, 0xF0));
                 Pen pen = new Pen(brush);
                 Font font = panel.Font;
 
@@ -160,8 +163,6 @@ namespace Cap10Slog.View
                     y += this.TimeLabelVerticalSpacing*this.TimeLabelSize.Height;
                 }
 
-                e.Graphics.DrawLine(pen, this.TimeLabelSize.Width, 0, this.TimeLabelSize.Width, panel.Height);
-
                 e.Graphics.RotateTransform(90);
 
                 Rectangle r = new Rectangle();
@@ -172,19 +173,34 @@ namespace Cap10Slog.View
                 {
                     if (this.hScrollBar.Value <= threadIdx)
                     {
+                        if ( threadIdx % 2 == 0 )
+                        {
+                            r.X = 0;
+                            r.Y = (int)Math.Ceiling(y);
+
+                            r.Width = this.panel.Height;
+                            r.Height = (int)(Math.Ceiling(this.ThreadLabelSize.Height*this.ThreadLabelHorizontalSpacing));
+
+                            e.Graphics.FillRectangle(darkColumnBrush, r);
+                        }
+
                         e.Graphics.DrawString(logThread.ThreadID, font, brush, x, y);
-                        y -= (this.ThreadLabelSize.Height*this.ThreadLabelHorizontalSpacing);
+
+                        DateTime lastLogRecordTimeRendered = DateTime.MinValue;
 
                         foreach (LogRecord logRecord in logThread.LogRecords)
                         {
-                            if ( this.EarliestTimeRendered <= logRecord.Time )
+                            if ( this.EarliestTimeRendered <= logRecord.Time &&
+                                 logRecord.Time != lastLogRecordTimeRendered )
                             {
-                                r.X = (int)Math.Floor(YCoordinateFromTime(logRecord.Time) - 10);
-                                r.Y = (int)(Math.Floor(y - 10));
+                                r.X = (int)Math.Floor(YCoordinateFromTime(logRecord.Time) + 10);
+                                r.Y = (int)(Math.Floor(y + 10));
                                 r.Width = 10;
                                 r.Height = 10;
 
                                 e.Graphics.FillEllipse(brush, r);
+
+                                lastLogRecordTimeRendered = logRecord.Time;
                             }
 
                             if (this.LatestTimeRendered < logRecord.Time )
@@ -192,14 +208,20 @@ namespace Cap10Slog.View
                                 break;
                             }
                         }
+
+                        y -= (this.ThreadLabelSize.Height * this.ThreadLabelHorizontalSpacing);
+
                     }
 
                     if ( this.panel.Width < -y )
                     {
                         break;
                     }
+
                     ++threadIdx;
                 }
+
+                e.Graphics.DrawLine(pen, 0, -this.TimeLabelSize.Width+1, this.panel.Height, -this.TimeLabelSize.Width+1);
             }
         }
 
