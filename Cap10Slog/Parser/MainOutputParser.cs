@@ -67,6 +67,7 @@ namespace Cap10Slog.Parser
                     }
 
                     currentRecordBuffer.Append(line);
+
                 }
 
                 result.Threads = new List<LogThread>();

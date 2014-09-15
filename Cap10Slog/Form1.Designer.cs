@@ -31,6 +31,7 @@
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.splitter = new System.Windows.Forms.Splitter();
             this.logTimelineView = new Cap10Slog.View.LogTimelineView();
+            this.logTextView = new Cap10Slog.View.LogTextView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -50,6 +51,7 @@
             // 
             // splitContainer.Panel2
             // 
+            this.splitContainer.Panel2.Controls.Add(this.logTextView);
             this.splitContainer.Panel2.Controls.Add(this.splitter);
             this.splitContainer.Size = new System.Drawing.Size(882, 674);
             this.splitContainer.SplitterDistance = 337;
@@ -73,8 +75,17 @@
             this.logTimelineView.Name = "logTimelineView";
             this.logTimelineView.Size = new System.Drawing.Size(882, 337);
             this.logTimelineView.TabIndex = 0;
+            this.logTimelineView.ToolTipText = "";
             this.logTimelineView.DragDrop += new System.Windows.Forms.DragEventHandler(this.logTimelineView1_DragDrop);
             this.logTimelineView.DragEnter += new System.Windows.Forms.DragEventHandler(this.logTimelineView1_DragEnter);
+            // 
+            // logTextView
+            // 
+            this.logTextView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logTextView.Location = new System.Drawing.Point(0, 3);
+            this.logTextView.Name = "logTextView";
+            this.logTextView.Size = new System.Drawing.Size(882, 330);
+            this.logTextView.TabIndex = 1;
             // 
             // Form1
             // 
@@ -98,6 +109,7 @@
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.Splitter splitter;
         private View.LogTimelineView logTimelineView;
+        private View.LogTextView logTextView;
     }
 }
 

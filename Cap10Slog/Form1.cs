@@ -38,6 +38,8 @@ namespace Cap10Slog
                         filepath => MainOutputParser.Parse(filepath));
 
                 logTimelineView.LogFileCollection = new LogFileCollection(logFiles);
+
+                logTextView.LogFileCollection = logTimelineView.LogFileCollection;
             }
         }
 
