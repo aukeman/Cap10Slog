@@ -18,6 +18,7 @@ namespace Cap10Slog.View
     {
 
         private Dictionary<string, ILogRecordIcon> threadIcons = new Dictionary<string, ILogRecordIcon>();
+        private Dictionary<string, bool> threadFilter = new Dictionary<string, bool>();
 
         private string toolTipText = "";
         public string ToolTipText
@@ -122,11 +123,14 @@ namespace Cap10Slog.View
                             this.LogFileCollection.LatestTime.Hour, this.LogFileCollection.LatestTime.Minute, this.LogFileCollection.LatestTime.Second);
                     this.LatestTimeAvailable = this.LatestTimeAvailable.AddSeconds(1.0);
 
-                    UpdateEarliestAndLatestRenderedTimes();
+                    UpdateEarliestAndLatestRenderedTimes(); 
 
+                    threadIcons.Clear();
+                    threadFilter.Clear();
                     foreach (LogThread logThread in this.logFileCollection.LogThreads)
                     {
                         threadIcons.Add(logThread.ThreadID, LogRecordIconFactory.GetNext());
+                        threadFilter.Add(logThread.ThreadID, true);
                     }
                 }
                 else
@@ -162,6 +166,8 @@ namespace Cap10Slog.View
 
             this.TimeLabelSize = SizeF.Empty;
             this.ThreadLabelSize = SizeF.Empty;
+
+            this.panel.ContextMenu = this.contextMenu;
         }
 
         public ILogRecordIcon GetLogRecordIcon(string threadID)
@@ -217,26 +223,29 @@ namespace Cap10Slog.View
 
                         e.Graphics.DrawString(logThread.ThreadID, font, brush, x, y);
 
-                        DateTime lastLogRecordTimeRendered = DateTime.MinValue;
-
-                        foreach (LogRecord logRecord in logThread.LogRecords)
+                        if (this.threadFilter[logThread.ThreadID])
                         {
-                            if ( this.EarliestTimeRendered <= logRecord.Time &&
-                                 logRecord.Time != lastLogRecordTimeRendered )
+                            DateTime lastLogRecordTimeRendered = DateTime.MinValue;
+
+                            foreach (LogRecord logRecord in logThread.LogRecords)
                             {
-                                r.X = (int)Math.Floor(YCoordinateFromTime(logRecord.Time) + 10);
-                                r.Y = (int)(Math.Floor(y + 10));
-                                r.Width = 10;
-                                r.Height = 10;
+                                if (this.EarliestTimeRendered <= logRecord.Time &&
+                                     logRecord.Time != lastLogRecordTimeRendered)
+                                {
+                                    r.X = (int)Math.Floor(YCoordinateFromTime(logRecord.Time) + 10);
+                                    r.Y = (int)(Math.Floor(y + 10));
+                                    r.Width = 10;
+                                    r.Height = 10;
 
-                                GetLogRecordIcon(logThread.ThreadID).Draw(e.Graphics, r);
+                                    GetLogRecordIcon(logThread.ThreadID).Draw(e.Graphics, r);
 
-                                lastLogRecordTimeRendered = logRecord.Time;
-                            }
+                                    lastLogRecordTimeRendered = logRecord.Time;
+                                }
 
-                            if (this.LatestTimeRendered < logRecord.Time )
-                            {
-                                break;
+                                if (this.LatestTimeRendered < logRecord.Time)
+                                {
+                                    break;
+                                }
                             }
                         }
 
@@ -282,7 +291,15 @@ namespace Cap10Slog.View
             {
                 LogThread logThread = this.LogFileCollection.LogThreads[threadIdx];
 
+                this.contextMenu.MenuItems.Clear();
+                this.contextMenu.MenuItems.Add("Hide This Thread", delegate(object s, EventArgs e2) { HideThread(logThread); });
+                this.contextMenu.MenuItems.Add("Hide Other Threads", delegate(object s, EventArgs e2) { HideOtherThreads(logThread);  });
+                this.contextMenu.MenuItems.Add("Hide All Threads", delegate(object s, EventArgs e2) { HideAllThreads();  });
+                this.contextMenu.MenuItems.Add("Show This Thread", delegate(object s, EventArgs e2) { ShowThisThread(logThread);  });
+                this.contextMenu.MenuItems.Add("Show All Threads", delegate(object s, EventArgs e2) { ShowAllThreads();  });
+
                 string toolTipText = "Thread ID: " + logThread.ThreadID;
+
 
                 foreach (LogRecord logRecord in logThread.LogRecords)
                 {
@@ -308,6 +325,8 @@ namespace Cap10Slog.View
             else
             {
                 this.ToolTipText = "";
+
+                this.contextMenu.MenuItems.Clear();
             }
         }
 
@@ -343,5 +362,49 @@ namespace Cap10Slog.View
             this.ThreadLabelSize = g.MeasureString("0000", f);
         }
 
+        void HideThread(LogThread logThreadToHide)
+        {
+            this.threadFilter[logThreadToHide.ThreadID] = false;
+
+            this.Refresh();
+        }
+
+        void HideOtherThreads(LogThread logThreadToShow)
+        {
+            foreach (LogThread logThread in this.LogFileCollection.LogThreads)
+            {
+                this.threadFilter[logThread.ThreadID] = (logThread.ThreadID == logThreadToShow.ThreadID);
+            }
+
+            this.Refresh();
+        }
+
+        void HideAllThreads()
+        {
+            foreach (LogThread logThread in this.LogFileCollection.LogThreads)
+            {
+                this.threadFilter[logThread.ThreadID] = false;
+            }
+
+            this.Refresh();
+        }
+
+        void ShowThisThread(LogThread logThreadToShow)
+        {
+            this.threadFilter[logThreadToShow.ThreadID] = true;
+
+            this.Refresh();
+
+        }
+
+        void ShowAllThreads()
+        {
+            foreach (LogThread logThread in this.LogFileCollection.LogThreads)
+            {
+                this.threadFilter[logThread.ThreadID] = true;
+            }
+
+            this.Refresh();
+        }
     }
 }

@@ -33,6 +33,7 @@
             this.hScrollBar = new System.Windows.Forms.HScrollBar();
             this.panel = new System.Windows.Forms.Panel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.contextMenu = new System.Windows.Forms.ContextMenu();
             this.SuspendLayout();
             // 
             // vScrollBar
@@ -72,6 +73,10 @@
             this.panel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel_Paint);
             this.panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel_MouseMove);
             // 
+            // contextMenu
+            // 
+            this.contextMenu.Name = "contextMenu";
+            // 
             // LogTimelineView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -93,5 +98,6 @@
         private System.Windows.Forms.HScrollBar hScrollBar;
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ContextMenu contextMenu;
     }
 }
