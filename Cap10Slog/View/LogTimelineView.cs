@@ -19,6 +19,23 @@ namespace Cap10Slog.View
 
         private Dictionary<string, ILogRecordIcon> threadIcons = new Dictionary<string, ILogRecordIcon>();
 
+        private string toolTipText = "";
+        public string ToolTipText
+        {
+            get
+            {
+                return this.toolTipText;
+            }
+            set
+            {
+                if ( value != this.toolTipText )
+                {
+                    this.toolTipText = value;
+                    this.toolTip.SetToolTip(this.panel, this.toolTipText);
+                }
+            }
+        }
+
         public DateTime EarliestTimeAvailable
         {
             get;
@@ -73,22 +90,6 @@ namespace Cap10Slog.View
         public float VerticalPixelsPerSecond
         {
             get { return this.TimeLabelVerticalSpacing * this.TimeLabelSize.Height / this.SecondsPerLabel; }
-        }
-
-        public LogTimelineView()
-        {
-            InitializeComponent();
-
-            System.Reflection.PropertyInfo aProp =
-            typeof(System.Windows.Forms.Control).GetProperty(
-              "DoubleBuffered",
-              System.Reflection.BindingFlags.NonPublic |
-              System.Reflection.BindingFlags.Instance);
-
-            aProp.SetValue(this.panel, true, null);
-
-            this.TimeLabelSize = SizeF.Empty;
-            this.ThreadLabelSize = SizeF.Empty;
         }
 
         private LogFileCollection logFileCollection;
@@ -147,6 +148,27 @@ namespace Cap10Slog.View
             }
         }
 
+        public LogTimelineView()
+        {
+            InitializeComponent();
+
+            System.Reflection.PropertyInfo aProp =
+            typeof(System.Windows.Forms.Control).GetProperty(
+              "DoubleBuffered",
+              System.Reflection.BindingFlags.NonPublic |
+              System.Reflection.BindingFlags.Instance);
+
+            aProp.SetValue(this.panel, true, null);
+
+            this.TimeLabelSize = SizeF.Empty;
+            this.ThreadLabelSize = SizeF.Empty;
+        }
+
+        public ILogRecordIcon GetLogRecordIcon(string threadID)
+        {
+            return this.threadIcons[threadID];
+        }
+        
         private void panel_Paint(object sender, PaintEventArgs e)
         {
 
@@ -207,7 +229,7 @@ namespace Cap10Slog.View
                                 r.Width = 10;
                                 r.Height = 10;
 
-                                threadIcons[logThread.ThreadID].Draw(e.Graphics, r);
+                                GetLogRecordIcon(logThread.ThreadID).Draw(e.Graphics, r);
 
                                 lastLogRecordTimeRendered = logRecord.Time;
                             }
@@ -250,6 +272,45 @@ namespace Cap10Slog.View
             UpdateEarliestAndLatestRenderedTimes();            
         }
 
+        private void panel_MouseMove(object sender, MouseEventArgs e)
+        {
+            int threadIdx = (int)((e.X - this.TimeLabelSize.Width) / (this.ThreadLabelSize.Height*this.ThreadLabelHorizontalSpacing)) + this.hScrollBar.Value;
+
+            if ( this.LogFileCollection != null &&
+                 this.hScrollBar.Value <= threadIdx &&
+                 threadIdx < this.LogFileCollection.LogThreads.Length )
+            {
+                LogThread logThread = this.LogFileCollection.LogThreads[threadIdx];
+
+                string toolTipText = "Thread ID: " + logThread.ThreadID;
+
+                foreach (LogRecord logRecord in logThread.LogRecords)
+                {
+                    if ( this.EarliestTimeRendered <= logRecord.Time )
+                    {
+                        float coord = YCoordinateFromTime(logRecord.Time) + 10;
+
+                        if ( coord <= e.Y && e.Y <= coord+10 )
+                        {
+                            toolTipText += "\nTime: " + logRecord.Time + "\n" + logRecord.Data;
+                            break;
+                        }
+
+                        if ( this.LatestTimeRendered < logRecord.Time)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                this.ToolTipText = toolTipText;
+            }
+            else
+            {
+                this.ToolTipText = "";
+            }
+        }
+
         private float YCoordinateFromTime(DateTime t)
         {
             return this.VerticalPixelsPerSecond * (t.Ticks - this.EarliestTimeRendered.Ticks) / TimeSpan.TicksPerSecond;
@@ -281,5 +342,6 @@ namespace Cap10Slog.View
             this.TimeLabelSize = g.MeasureString("0000-00-00 00:00:00.000", f);
             this.ThreadLabelSize = g.MeasureString("0000", f);
         }
+
     }
 }
