@@ -26,7 +26,7 @@ namespace Cap10Slog.View.LogRecordIcon
             colors.Enqueue(Color.Brown);
             colors.Enqueue(Color.Yellow);
             colors.Enqueue(Color.Orange);
-            colors.Enqueue(Color.Gray);
+            colors.Enqueue(Color.Black);
 
             constructors.Enqueue(typeof(Circle).GetConstructor(construcorArgumentList));
             constructors.Enqueue(typeof(Square).GetConstructor(construcorArgumentList));

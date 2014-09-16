@@ -19,9 +19,6 @@ namespace Cap10Slog.View
 
         public EventHandler ThreadFilterChanged;
 
-        private Dictionary<string, ILogRecordIcon> threadIcons = new Dictionary<string, ILogRecordIcon>();
-        private Dictionary<string, bool> threadFilter = new Dictionary<string, bool>();
-
         private string toolTipText = "";
         public string ToolTipText
         {
@@ -127,13 +124,6 @@ namespace Cap10Slog.View
 
                     UpdateEarliestAndLatestRenderedTimes(); 
 
-                    threadIcons.Clear();
-                    threadFilter.Clear();
-                    foreach (LogThread logThread in this.logFileCollection.LogThreads)
-                    {
-                        threadIcons.Add(logThread.ThreadID, LogRecordIconFactory.GetNext());
-                        threadFilter.Add(logThread.ThreadID, true);
-                    }
                 }
                 else
                 {
@@ -170,16 +160,6 @@ namespace Cap10Slog.View
             this.ThreadLabelSize = SizeF.Empty;
 
             this.panel.ContextMenu = this.contextMenu;
-        }
-
-        public ILogRecordIcon GetLogRecordIcon(string threadID)
-        {
-            return this.threadIcons[threadID];
-        }
-
-        public bool IsThreadFiltered(string threadID)
-        {
-            return !this.threadFilter[threadID];
         }
         
         private void panel_Paint(object sender, PaintEventArgs e)
@@ -230,29 +210,26 @@ namespace Cap10Slog.View
 
                         e.Graphics.DrawString(logThread.ThreadID, font, brush, x, y);
 
-                        if (this.threadFilter[logThread.ThreadID])
+                        DateTime lastLogRecordTimeRendered = DateTime.MinValue;
+
+                        foreach (LogRecord logRecord in logThread.LogRecords)
                         {
-                            DateTime lastLogRecordTimeRendered = DateTime.MinValue;
-
-                            foreach (LogRecord logRecord in logThread.LogRecords)
+                            if (this.EarliestTimeRendered <= logRecord.Time &&
+                                    logRecord.Time != lastLogRecordTimeRendered)
                             {
-                                if (this.EarliestTimeRendered <= logRecord.Time &&
-                                     logRecord.Time != lastLogRecordTimeRendered)
-                                {
-                                    r.X = (int)Math.Floor(YCoordinateFromTime(logRecord.Time) + 10);
-                                    r.Y = (int)(Math.Floor(y + 10));
-                                    r.Width = 10;
-                                    r.Height = 10;
+                                r.X = (int)Math.Floor(YCoordinateFromTime(logRecord.Time) + 10);
+                                r.Y = (int)(Math.Floor(y + 10));
+                                r.Width = 10;
+                                r.Height = 10;
 
-                                    GetLogRecordIcon(logThread.ThreadID).Draw(e.Graphics, r);
+                                logThread.Icon.Draw(e.Graphics, r);
 
-                                    lastLogRecordTimeRendered = logRecord.Time;
-                                }
+                                lastLogRecordTimeRendered = logRecord.Time;
+                            }
 
-                                if (this.LatestTimeRendered < logRecord.Time)
-                                {
-                                    break;
-                                }
+                            if (this.LatestTimeRendered < logRecord.Time)
+                            {
+                                break;
                             }
                         }
 
@@ -371,7 +348,7 @@ namespace Cap10Slog.View
 
         void HideThread(LogThread logThreadToHide)
         {
-            this.threadFilter[logThreadToHide.ThreadID] = false;
+            logThreadToHide.Filtered = true;
 
             this.Refresh();
             this.ThreadFilterChanged(this, EventArgs.Empty);
@@ -381,7 +358,7 @@ namespace Cap10Slog.View
         {
             foreach (LogThread logThread in this.LogFileCollection.LogThreads)
             {
-                this.threadFilter[logThread.ThreadID] = (logThread.ThreadID == logThreadToShow.ThreadID);
+                logThread.Filtered = (logThread.ThreadID != logThreadToShow.ThreadID);
             }
 
             this.Refresh();
@@ -392,7 +369,7 @@ namespace Cap10Slog.View
         {
             foreach (LogThread logThread in this.LogFileCollection.LogThreads)
             {
-                this.threadFilter[logThread.ThreadID] = false;
+                logThread.Filtered = true;
             }
 
             this.Refresh();
@@ -401,7 +378,7 @@ namespace Cap10Slog.View
 
         void ShowThisThread(LogThread logThreadToShow)
         {
-            this.threadFilter[logThreadToShow.ThreadID] = true;
+            logThreadToShow.Filtered = false;
 
             this.Refresh();
             this.ThreadFilterChanged(this, EventArgs.Empty);
@@ -411,7 +388,7 @@ namespace Cap10Slog.View
         {
             foreach (LogThread logThread in this.LogFileCollection.LogThreads)
             {
-                this.threadFilter[logThread.ThreadID] = true;
+                logThread.Filtered = false;
             }
 
             this.Refresh();

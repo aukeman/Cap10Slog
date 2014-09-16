@@ -84,6 +84,11 @@ namespace Cap10Slog.Model
                 }
             }
         }
+
+        public LogThread GetLogThread(string threadID)
+        {
+            return this.logThreads.Single<LogThread>(lr => lr.ThreadID == threadID);
+        }
     }
 }
  

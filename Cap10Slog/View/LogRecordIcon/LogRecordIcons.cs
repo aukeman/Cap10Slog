@@ -239,4 +239,16 @@ namespace Cap10Slog.View.LogRecordIcon
             g.DrawLine(this.pen, r.X, r.Y + r.Height / 2, r.X + r.Width, r.Y + r.Height / 2);
         }
     }
+
+    class Dot : AbstractLogRecordIcon
+    {
+        public Dot(Color color)
+            : base(color)
+        { }
+
+        public override void Draw(Graphics g, Rectangle r)
+        {
+            g.FillEllipse(this.brush, r.X + r.Width / 2 - 2, r.Y + r.Height/2 - 2, 4, 4);
+        }
+    }
 }
