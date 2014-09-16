@@ -13,12 +13,15 @@ namespace Cap10Slog.Model
             get { return (a, b) => a.Time.CompareTo(b.Time); }
         }
 
-        public LogRecord(string raw, DateTime time, int dataStartIdx, int dataLength)
+        public LogRecord(string raw, DateTime time, int dataStartIdx, int dataLength, string filename, int lineNumber, string threadID)
         {
             this.Raw = raw;
             this.Time = time;
             this.DataStartIdx = dataStartIdx;
             this.DataLength = dataLength;
+            this.Filename = filename;
+            this.LineNumber = lineNumber;
+            this.ThreadID = threadID;
         }
 
         public DateTime Time
@@ -41,6 +44,24 @@ namespace Cap10Slog.Model
             private set;
         }
 
+        public string ThreadID
+        {
+            get;
+            private set;
+        }
+
+        public string Filename
+        {
+            get;
+            private set;
+        }
+
+        public int LineNumber
+        {
+            get;
+            private set;
+        }
+
         private int DataStartIdx
         {
             get;
@@ -52,6 +73,5 @@ namespace Cap10Slog.Model
             get;
             set;
         }
-
     }
 }

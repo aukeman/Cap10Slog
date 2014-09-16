@@ -18,6 +18,10 @@ namespace Cap10Slog
         public Form1()
         {
             InitializeComponent();
+
+            this.logTimelineView.ThreadFilterChanged += this.logTimelineView_FilterChanged;
+
+            this.logTextView.TimelineView = this.logTimelineView;
         }
 
         private void logTimelineView1_DragEnter(object sender, DragEventArgs e)
@@ -41,6 +45,11 @@ namespace Cap10Slog
 
                 logTextView.LogFileCollection = logTimelineView.LogFileCollection;
             }
+        }
+
+        private void logTimelineView_FilterChanged(object sender, EventArgs e)
+        {
+            this.logTextView.LogFileCollection = logTimelineView.LogFileCollection;
         }
 
     }

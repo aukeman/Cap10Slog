@@ -26,6 +26,7 @@ namespace Cap10Slog.Parser
 
                 var currentRecordBuffer = new StringBuilder();
 
+                int lineNumber = 1;
                 while (!r.EndOfStream)
                 {
                     string line = r.ReadLine();
@@ -42,13 +43,13 @@ namespace Cap10Slog.Parser
                             Group dataGroup = m.Groups[2];
                             Group threadGroup = m.Groups[3];
 
-                            var currentRecord = new LogRecord(currentRecordString, DateTime.Parse(dateGroup.Value), dataGroup.Index, dataGroup.Length);
-                                
                             string threadID = threadGroup.Value;
 
-                            if ( !threads.ContainsKey(threadID) )
+                            LogThread logThread = null;
+                            
+                            if ( !threads.TryGetValue(threadID, out logThread) )
                             {
-                                var logThread = new LogThread();
+                                logThread = new LogThread();
                                                         
                                 logThread.ThreadID = threadID;
                                 logThread.LogRecords = new List<LogRecord>();
@@ -56,7 +57,9 @@ namespace Cap10Slog.Parser
                                 threads.Add(threadID, logThread);
                             }
 
-                            threads[threadID].LogRecords.Add(currentRecord);
+                            var currentRecord = new LogRecord(currentRecordString, DateTime.Parse(dateGroup.Value), dataGroup.Index, dataGroup.Length, filepath, lineNumber, logThread.ThreadID);
+
+                            logThread.LogRecords.Add(currentRecord);
                         }
                         else
                         {
@@ -67,7 +70,7 @@ namespace Cap10Slog.Parser
                     }
 
                     currentRecordBuffer.Append(line);
-
+                    ++lineNumber;
                 }
 
                 result.Threads = new List<LogThread>();

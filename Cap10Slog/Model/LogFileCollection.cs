@@ -10,12 +10,10 @@ namespace Cap10Slog.Model
     {
         public LogFileCollection(LogFile[] logFiles)
         {
-            this.logFiles = logFiles;
-
             var threads = new List<LogThread>();
             var records = new List<LogRecord>();
 
-            foreach (LogFile logFile in this.LogFiles)
+            foreach (LogFile logFile in logFiles)
             { 
                 foreach (LogThread importedLogThread in logFile.Threads)
                 {
@@ -23,14 +21,13 @@ namespace Cap10Slog.Model
 
                     if (logThread == null)
                     {
-                        logThread = new LogThread();
-                        logThread.ThreadID = importedLogThread.ThreadID;
-                        logThread.LogRecords = new List<LogRecord>();
-
-                        threads.Add(logThread);
+                        threads.Add(importedLogThread);
+                    }
+                    else
+                    {
+                        logThread.LogRecords.AddRange(importedLogThread.LogRecords);
                     }
 
-                    logThread.LogRecords.AddRange(importedLogThread.LogRecords);
                     records.AddRange(importedLogThread.LogRecords);
                 }
             }
@@ -44,12 +41,6 @@ namespace Cap10Slog.Model
             }
 
             Array.Sort(this.logRecords, LogRecord.CompareByAscendingTime );
-        }
-
-        private LogFile[] logFiles = new LogFile[0];
-        public LogFile[] LogFiles
-        {
-            get { return this.logFiles; }
         }
 
         private LogThread[] logThreads = new LogThread[0];

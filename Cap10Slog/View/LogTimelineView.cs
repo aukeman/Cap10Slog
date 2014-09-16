@@ -17,6 +17,8 @@ namespace Cap10Slog.View
     public partial class LogTimelineView : UserControl
     {
 
+        public EventHandler ThreadFilterChanged;
+
         private Dictionary<string, ILogRecordIcon> threadIcons = new Dictionary<string, ILogRecordIcon>();
         private Dictionary<string, bool> threadFilter = new Dictionary<string, bool>();
 
@@ -174,6 +176,11 @@ namespace Cap10Slog.View
         {
             return this.threadIcons[threadID];
         }
+
+        public bool IsThreadFiltered(string threadID)
+        {
+            return !this.threadFilter[threadID];
+        }
         
         private void panel_Paint(object sender, PaintEventArgs e)
         {
@@ -309,7 +316,7 @@ namespace Cap10Slog.View
 
                         if ( coord <= e.Y && e.Y <= coord+10 )
                         {
-                            toolTipText += "\nTime: " + logRecord.Time + "\n" + logRecord.Data;
+                            toolTipText += "\nTime: " + logRecord.Time +  "\nFile: " + logRecord.Filename + "\nLine: " + logRecord.LineNumber + "\n" + logRecord.Data;
                             break;
                         }
 
@@ -367,6 +374,7 @@ namespace Cap10Slog.View
             this.threadFilter[logThreadToHide.ThreadID] = false;
 
             this.Refresh();
+            this.ThreadFilterChanged(this, EventArgs.Empty);
         }
 
         void HideOtherThreads(LogThread logThreadToShow)
@@ -377,6 +385,7 @@ namespace Cap10Slog.View
             }
 
             this.Refresh();
+            this.ThreadFilterChanged(this, EventArgs.Empty);
         }
 
         void HideAllThreads()
@@ -387,6 +396,7 @@ namespace Cap10Slog.View
             }
 
             this.Refresh();
+            this.ThreadFilterChanged(this, EventArgs.Empty);
         }
 
         void ShowThisThread(LogThread logThreadToShow)
@@ -394,7 +404,7 @@ namespace Cap10Slog.View
             this.threadFilter[logThreadToShow.ThreadID] = true;
 
             this.Refresh();
-
+            this.ThreadFilterChanged(this, EventArgs.Empty);
         }
 
         void ShowAllThreads()
@@ -405,6 +415,7 @@ namespace Cap10Slog.View
             }
 
             this.Refresh();
+            this.ThreadFilterChanged(this, EventArgs.Empty);
         }
     }
 }
