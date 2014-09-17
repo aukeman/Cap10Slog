@@ -181,7 +181,7 @@ namespace Cap10Slog.View
                 float y = 0.0f;
                 while ( y < panel.Height && time <= this.LatestTimeRendered)
                 {
-                    e.Graphics.DrawString(time.ToString("yyyy-MM-dd HH:mm:ss.fff"), font, brush, x, y);
+                    e.Graphics.DrawString(time.ToString(ViewUtilities.DateTimeFormat), font, brush, x, y);
                     time = time.AddSeconds( this.SecondsPerLabel );
 
                     y += this.TimeLabelVerticalSpacing*this.TimeLabelSize.Height;
@@ -293,7 +293,7 @@ namespace Cap10Slog.View
 
                         if ( coord <= e.Y && e.Y <= coord+10 )
                         {
-                            toolTipText += "\nTime: " + logRecord.Time +  "\nFile: " + logRecord.Filename + "\nLine: " + logRecord.LineNumber + "\n" + logRecord.Data;
+                            toolTipText += "\nTime: " + logRecord.Time.ToString(ViewUtilities.DateTimeFormat) +  "\nFile: " + logRecord.Filename + "\nLine: " + logRecord.LineNumber + "\n" + logRecord.Data;
                             break;
                         }
 

@@ -72,6 +72,7 @@
       <DependentUpon>LogTimelineView.cs</DependentUpon>
     </Compile>
     <Compile Include="View\LogRecordIcon\ILogRecordIcon.cs" />
+    <Compile Include="View\ViewUtilities.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

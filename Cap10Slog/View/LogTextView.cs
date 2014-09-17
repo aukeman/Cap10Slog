@@ -39,13 +39,21 @@ namespace Cap10Slog.View
 //                    this.richTextBox.Text = String.Join("", this.logFileCollection.LogRecords.Select<LogRecord, string>(lr => lr.Raw).ToArray());
 
 
+                    
+
+                    BindingSource bindingSource = new BindingSource();
+                    bindingSource.DataSource =
+                        this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered).Select<LogRecord, LogRecordAdapter>(lr => new LogRecordAdapter(lr));
+
+                    this.dataGridView.DataSource = bindingSource;
+
 //                    this.dataGridView.DataSource = 
 //                        this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered).Select<LogRecord, string>(lr => lr.Raw).ToArray();
 
-                    foreach (LogRecord lr in this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered))
-                    {
-                        this.dataGridView.Rows.Add(lr.Raw);
-                    }
+                    //foreach (LogRecord lr in this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered))
+                    //{
+                    //    this.dataGridView.Rows.Add(lr.Raw);
+                    //}
 
                     //this.dataGridView.Rows.AddRange()
                     //    .Select<LogRecord, string>(lr => lr.Raw).ToArray());
@@ -56,7 +64,34 @@ namespace Cap10Slog.View
                     this.dataGridView.DataSource = new object[0];
                 }
 
+                
+
                 this.Refresh();
+            }
+        }
+
+        private class LogRecordAdapter
+        {
+            private LogRecord logRecord = null;
+
+            public LogRecordAdapter(LogRecord logRecord)
+            {
+                this.logRecord = logRecord;
+            }
+
+            public string Time
+            {
+                get { return logRecord.Time.ToString(ViewUtilities.DateTimeFormat);  }
+            }
+
+            public string Thread
+            {
+                get { return logRecord.ThreadID; }
+            }
+
+            public string Data
+            {
+                get { return logRecord.Data; }
             }
         }
 
