@@ -20,6 +20,7 @@ namespace Cap10Slog
             InitializeComponent();
 
             this.logTimelineView.ThreadFilterChanged += this.logTimelineView_FilterChanged;
+            this.logTimelineView.LogRecordSelected += this.logTimelineView_RecordSelected;
 
             this.logTextView.TimelineView = this.logTimelineView;
         }
@@ -50,6 +51,14 @@ namespace Cap10Slog
         private void logTimelineView_FilterChanged(object sender, EventArgs e)
         {
             this.logTextView.LogFileCollection = logTimelineView.LogFileCollection;
+        }
+
+        private void logTimelineView_RecordSelected(object sender, EventArgs e)
+        {
+            if ( this.logTimelineView.LogRecordUnderCursor != null )
+            {
+                this.logTextView.SelectLogRecord(this.logTimelineView.LogRecordUnderCursor);
+            }
         }
 
     }

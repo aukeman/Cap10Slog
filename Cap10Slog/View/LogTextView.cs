@@ -36,37 +36,46 @@ namespace Cap10Slog.View
                 if (this.logFileCollection != null &&
                     0 < this.logFileCollection.LogRecords.Length)
                 {
-//                    this.richTextBox.Text = String.Join("", this.logFileCollection.LogRecords.Select<LogRecord, string>(lr => lr.Raw).ToArray());
-
-
-                    
-
                     BindingSource bindingSource = new BindingSource();
                     bindingSource.DataSource =
                         this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered).Select<LogRecord, LogRecordAdapter>(lr => new LogRecordAdapter(lr));
 
                     this.dataGridView.DataSource = bindingSource;
-
-//                    this.dataGridView.DataSource = 
-//                        this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered).Select<LogRecord, string>(lr => lr.Raw).ToArray();
-
-                    //foreach (LogRecord lr in this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered))
-                    //{
-                    //    this.dataGridView.Rows.Add(lr.Raw);
-                    //}
-
-                    //this.dataGridView.Rows.AddRange()
-                    //    .Select<LogRecord, string>(lr => lr.Raw).ToArray());
-
                 }
                 else
                 {
                     this.dataGridView.DataSource = new object[0];
                 }
 
+            
                 
 
                 this.Refresh();
+            }
+        }
+
+        public void SelectLogRecord(LogRecord logRecord)
+        {
+            bool foundRecord = false;
+            foreach (DataGridViewRow row in this.dataGridView.Rows)
+            {
+                LogRecordAdapter lra = row.DataBoundItem as LogRecordAdapter;
+
+                if ( lra.GetLogRecord().ThreadID == logRecord.ThreadID &&
+                     lra.GetLogRecord().Time == logRecord.Time )
+                {
+                    row.Selected = true;
+
+                    if (!foundRecord)
+                    {
+                        this.dataGridView.FirstDisplayedScrollingRowIndex = row.Index;
+                        foundRecord = true;
+                    }
+                }
+                else
+                {
+                    row.Selected = false;
+                }
             }
         }
 
@@ -93,8 +102,12 @@ namespace Cap10Slog.View
             {
                 get { return logRecord.Data; }
             }
-        }
 
+            public LogRecord GetLogRecord()
+            {
+                return this.logRecord;
+            }
+        }
     }
 }
 ;

@@ -18,6 +18,7 @@ namespace Cap10Slog.View
     {
 
         public EventHandler ThreadFilterChanged;
+        public EventHandler LogRecordSelected;
 
         private string toolTipText = "";
         public string ToolTipText
@@ -32,6 +33,62 @@ namespace Cap10Slog.View
                 {
                     this.toolTipText = value;
                     this.toolTip.SetToolTip(this.panel, this.toolTipText);
+                }
+            }
+        }
+
+        private LogRecord logRecordUnderCursor = null;
+        public LogRecord LogRecordUnderCursor
+        {
+            get
+            {
+                return this.logRecordUnderCursor;
+            }
+
+            private set
+            {
+                if ( value != this.logRecordUnderCursor )
+                {
+                    this.logRecordUnderCursor = value;
+
+                    if (this.logRecordUnderCursor != null)
+                    {
+                        this.ToolTipText =
+                            "Thread ID: " + this.logRecordUnderCursor.ThreadID +
+                            "\nTime: " + this.logRecordUnderCursor.Time.ToString(ViewUtilities.DateTimeFormat) +
+                            "\nFile: " + this.logRecordUnderCursor.Filename +
+                            "\nLine: " + this.logRecordUnderCursor.LineNumber +
+                            "\n" + this.logRecordUnderCursor.Data;
+                    }
+                }
+            }
+        }
+
+        private LogThread logThreadUnderCursor = null;
+        public LogThread LogThreadUnderCursor
+        {
+            get { return this.logThreadUnderCursor; }
+            set
+            {
+                if ( value != this.logThreadUnderCursor )
+                {
+                    this.logThreadUnderCursor = value;
+
+                    this.contextMenu.MenuItems.Clear();
+                    if (this.logThreadUnderCursor != null)
+                    {
+                        this.contextMenu.MenuItems.Add("Hide This Thread", delegate(object s, EventArgs e2) { HideThread(this.logThreadUnderCursor); });
+                        this.contextMenu.MenuItems.Add("Hide Other Threads", delegate(object s, EventArgs e2) { HideOtherThreads(this.logThreadUnderCursor); });
+                        this.contextMenu.MenuItems.Add("Hide All Threads", delegate(object s, EventArgs e2) { HideAllThreads(); });
+                        this.contextMenu.MenuItems.Add("Show This Thread", delegate(object s, EventArgs e2) { ShowThisThread(this.logThreadUnderCursor); });
+                        this.contextMenu.MenuItems.Add("Show All Threads", delegate(object s, EventArgs e2) { ShowAllThreads(); });
+
+                        this.ToolTipText = "Thread ID: " + this.logThreadUnderCursor.ThreadID;
+                    }
+                    else
+                    {
+                        this.ToolTipText = "";
+                    }
                 }
             }
         }
@@ -275,15 +332,7 @@ namespace Cap10Slog.View
             {
                 LogThread logThread = this.LogFileCollection.LogThreads[threadIdx];
 
-                this.contextMenu.MenuItems.Clear();
-                this.contextMenu.MenuItems.Add("Hide This Thread", delegate(object s, EventArgs e2) { HideThread(logThread); });
-                this.contextMenu.MenuItems.Add("Hide Other Threads", delegate(object s, EventArgs e2) { HideOtherThreads(logThread);  });
-                this.contextMenu.MenuItems.Add("Hide All Threads", delegate(object s, EventArgs e2) { HideAllThreads();  });
-                this.contextMenu.MenuItems.Add("Show This Thread", delegate(object s, EventArgs e2) { ShowThisThread(logThread);  });
-                this.contextMenu.MenuItems.Add("Show All Threads", delegate(object s, EventArgs e2) { ShowAllThreads();  });
-
-                string toolTipText = "Thread ID: " + logThread.ThreadID;
-
+                this.LogThreadUnderCursor = logThread;
 
                 foreach (LogRecord logRecord in logThread.LogRecords)
                 {
@@ -293,24 +342,21 @@ namespace Cap10Slog.View
 
                         if ( coord <= e.Y && e.Y <= coord+10 )
                         {
-                            toolTipText += "\nTime: " + logRecord.Time.ToString(ViewUtilities.DateTimeFormat) +  "\nFile: " + logRecord.Filename + "\nLine: " + logRecord.LineNumber + "\n" + logRecord.Data;
+                            this.LogRecordUnderCursor = logRecord;
                             break;
                         }
 
                         if ( this.LatestTimeRendered < logRecord.Time)
                         {
+                            this.LogRecordUnderCursor = null;
                             break;
                         }
                     }
                 }
-
-                this.ToolTipText = toolTipText;
             }
             else
             {
-                this.ToolTipText = "";
-
-                this.contextMenu.MenuItems.Clear();
+                this.LogThreadUnderCursor = null;
             }
         }
 
@@ -342,7 +388,7 @@ namespace Cap10Slog.View
 
         private void UpdateLabelSizes(Graphics g, Font f)
         {
-            this.TimeLabelSize = g.MeasureString("0000-00-00 00:00:00.000", f);
+            this.TimeLabelSize = g.MeasureString(ViewUtilities.DateTimeFormat, f);
             this.ThreadLabelSize = g.MeasureString("0000", f);
         }
 
@@ -394,5 +440,14 @@ namespace Cap10Slog.View
             this.Refresh();
             this.ThreadFilterChanged(this, EventArgs.Empty);
         }
+
+        private void panel_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if ( this.LogRecordUnderCursor != null )
+            {
+                this.LogRecordSelected(this, EventArgs.Empty);
+            }
+        }
+
     }
 }

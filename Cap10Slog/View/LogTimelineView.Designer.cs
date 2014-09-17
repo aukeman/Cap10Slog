@@ -71,11 +71,8 @@
             this.panel.Size = new System.Drawing.Size(768, 299);
             this.panel.TabIndex = 2;
             this.panel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel_Paint);
+            this.panel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panel_MouseDoubleClick);
             this.panel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel_MouseMove);
-            // 
-            // contextMenu
-            // 
-            this.contextMenu.Name = "contextMenu";
             // 
             // LogTimelineView
             // 

@@ -72,6 +72,7 @@
             this.logTimelineView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logTimelineView.Location = new System.Drawing.Point(0, 0);
             this.logTimelineView.LogFileCollection = null;
+            this.logTimelineView.LogThreadUnderCursor = null;
             this.logTimelineView.Name = "logTimelineView";
             this.logTimelineView.Size = new System.Drawing.Size(882, 337);
             this.logTimelineView.TabIndex = 0;
@@ -83,9 +84,11 @@
             // 
             this.logTextView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logTextView.Location = new System.Drawing.Point(0, 3);
+            this.logTextView.LogFileCollection = null;
             this.logTextView.Name = "logTextView";
             this.logTextView.Size = new System.Drawing.Size(882, 330);
             this.logTextView.TabIndex = 1;
+            this.logTextView.TimelineView = null;
             // 
             // Form1
             // 
