@@ -38,8 +38,17 @@ namespace Cap10Slog.View
                 {
 //                    this.richTextBox.Text = String.Join("", this.logFileCollection.LogRecords.Select<LogRecord, string>(lr => lr.Raw).ToArray());
 
-                    this.dataGridView.DataSource = 
-                        this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered).Select<LogRecord, string>(lr => lr.Raw).ToArray();
+
+//                    this.dataGridView.DataSource = 
+//                        this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered).Select<LogRecord, string>(lr => lr.Raw).ToArray();
+
+                    foreach (LogRecord lr in this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered))
+                    {
+                        this.dataGridView.Rows.Add(lr.Raw);
+                    }
+
+                    //this.dataGridView.Rows.AddRange()
+                    //    .Select<LogRecord, string>(lr => lr.Raw).ToArray());
 
                 }
                 else

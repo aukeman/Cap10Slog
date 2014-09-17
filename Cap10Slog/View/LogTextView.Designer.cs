@@ -37,23 +37,29 @@
             // 
             this.dataGridView.AllowUserToAddRows = false;
             this.dataGridView.AllowUserToDeleteRows = false;
+            this.dataGridView.AllowUserToResizeColumns = false;
+            this.dataGridView.AllowUserToResizeRows = false;
+            this.dataGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView.ColumnHeadersVisible = false;
             this.dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.rawLog});
             this.dataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView.GridColor = System.Drawing.SystemColors.Control;
             this.dataGridView.Location = new System.Drawing.Point(0, 0);
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.ReadOnly = true;
+            this.dataGridView.RowHeadersVisible = false;
             this.dataGridView.Size = new System.Drawing.Size(150, 150);
             this.dataGridView.TabIndex = 0;
             // 
             // rawLog
             // 
+            this.rawLog.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.rawLog.HeaderText = "Raw Log";
             this.rawLog.Name = "rawLog";
             this.rawLog.ReadOnly = true;
-            this.rawLog.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.rawLog.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.rawLog.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // LogTextView
