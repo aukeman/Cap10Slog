@@ -38,7 +38,8 @@ namespace Cap10Slog.View
                 {
                     BindingSource bindingSource = new BindingSource();
                     bindingSource.DataSource =
-                        this.logFileCollection.LogRecords.Where<LogRecord>(lr => !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered).Select<LogRecord, LogRecordAdapter>(lr => new LogRecordAdapter(lr));
+                        this.logFileCollection.LogRecords.Where<LogRecord>(lr => (!this.LogFileCollection.GetLogThread(lr.ThreadID).Hidden && 
+                                                                                  !this.LogFileCollection.GetLogThread(lr.ThreadID).Filtered)).Select<LogRecord, LogRecordAdapter>(lr => new LogRecordAdapter(lr));
 
                     this.dataGridView.DataSource = bindingSource;
                 }

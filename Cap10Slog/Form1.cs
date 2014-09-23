@@ -15,6 +15,8 @@ namespace Cap10Slog
 {
     public partial class Form1 : Form
     {
+        private HideOrFilter hideOrFilterDialog = new HideOrFilter();
+
         public Form1()
         {
             InitializeComponent();
@@ -23,6 +25,8 @@ namespace Cap10Slog
             this.logTimelineView.LogRecordSelected += this.logTimelineView_RecordSelected;
 
             this.logTextView.TimelineView = this.logTimelineView;
+
+            hideOrFilterDialog.Show();
         }
 
         private void logTimelineView1_DragEnter(object sender, DragEventArgs e)
@@ -45,6 +49,8 @@ namespace Cap10Slog
                 logTimelineView.LogFileCollection = new LogFileCollection(logFiles);
 
                 logTextView.LogFileCollection = logTimelineView.LogFileCollection;
+
+                hideOrFilterDialog.LogFileCollection = logTimelineView.LogFileCollection;
             }
         }
 

@@ -252,6 +252,11 @@ namespace Cap10Slog.View
                 int threadIdx = 0;
                 foreach (LogThread logThread in this.logFileCollection.LogThreads)
                 {
+                    if ( logThread.Filtered )
+                    {
+                        continue;
+                    }
+
                     if (this.hScrollBar.Value <= threadIdx)
                     {
                         if ( threadIdx % 2 == 0 )
@@ -394,7 +399,7 @@ namespace Cap10Slog.View
 
         void HideThread(LogThread logThreadToHide)
         {
-            logThreadToHide.Filtered = true;
+            logThreadToHide.Hidden = true;
 
             this.Refresh();
             this.ThreadFilterChanged(this, EventArgs.Empty);
@@ -404,7 +409,15 @@ namespace Cap10Slog.View
         {
             foreach (LogThread logThread in this.LogFileCollection.LogThreads)
             {
-                logThread.Filtered = (logThread.ThreadID != logThreadToShow.ThreadID);
+                if (logThread.ThreadID == logThreadToShow.ThreadID)
+                {
+                    logThread.Hidden = false;
+                    logThread.Filtered = false;
+                }
+                else
+                {
+                    logThread.Hidden = true;
+                }
             }
 
             this.Refresh();
@@ -415,7 +428,7 @@ namespace Cap10Slog.View
         {
             foreach (LogThread logThread in this.LogFileCollection.LogThreads)
             {
-                logThread.Filtered = true;
+                logThread.Hidden = true;
             }
 
             this.Refresh();
@@ -425,6 +438,7 @@ namespace Cap10Slog.View
         void ShowThisThread(LogThread logThreadToShow)
         {
             logThreadToShow.Filtered = false;
+            logThreadToShow.Hidden = false;
 
             this.Refresh();
             this.ThreadFilterChanged(this, EventArgs.Empty);
@@ -435,6 +449,7 @@ namespace Cap10Slog.View
             foreach (LogThread logThread in this.LogFileCollection.LogThreads)
             {
                 logThread.Filtered = false;
+                logThread.Hidden = false;
             }
 
             this.Refresh();

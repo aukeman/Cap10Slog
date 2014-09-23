@@ -11,14 +11,15 @@ namespace Cap10Slog.Model
 {
     public class LogThread
     {
-        private static ILogRecordIcon filteredIcon = new Dot(Color.LightGray);
+        private static ILogRecordIcon hiddenIcon = new Dot(Color.LightGray);
 
         public LogThread()
         {
             this.icon = LogRecordIconFactory.GetNext();
             this.Filtered = false;
+            this.Hidden = false;
         }
-        
+
         public string ThreadID
         {
             get;
@@ -36,8 +37,14 @@ namespace Cap10Slog.Model
         {
             get
             {
-                return (this.Filtered ? filteredIcon : icon);
+                return (this.Hidden ? hiddenIcon : icon);
             }
+        }
+
+        public bool Hidden
+        {
+            get;
+            set;
         }
 
         public bool Filtered
