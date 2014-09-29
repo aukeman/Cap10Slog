@@ -14,6 +14,8 @@ namespace Cap10Slog
 {
     public partial class HideOrFilter : Form
     {
+        public EventHandler HideOrFilterChanged;
+
         public HideOrFilter()
         {
             InitializeComponent();
@@ -46,6 +48,13 @@ namespace Cap10Slog
             }
         }
 
+        private void SelectedOptionsChanged()
+        {
+            this.filterDataGridView.Refresh();
+            this.okButton.Enabled = true;
+            this.applyButton.Enabled = true;
+        }
+
         private void filterAllButton_Click(object sender, EventArgs e)
         {
             foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
@@ -53,9 +62,7 @@ namespace Cap10Slog
                 lta.Filter = true;
             }
 
-            this.filterDataGridView.Refresh();
-            this.okButton.Enabled = true;
-            this.applyButton.Enabled = true;
+            SelectedOptionsChanged();
         }
 
         private void hideAllButton_Click(object sender, EventArgs e)
@@ -65,9 +72,7 @@ namespace Cap10Slog
                 lta.Hide = true;
             }
 
-            this.filterDataGridView.Refresh();
-            this.okButton.Enabled = true;
-            this.applyButton.Enabled = true;
+            SelectedOptionsChanged();
         }
 
         private void filterNoneButton_Click(object sender, EventArgs e)
@@ -77,9 +82,7 @@ namespace Cap10Slog
                 lta.Filter = false;
             }
 
-            this.filterDataGridView.Refresh();
-            this.okButton.Enabled = true;
-            this.applyButton.Enabled = true;
+            SelectedOptionsChanged();
         }
 
         private void hideNoneButton_Click(object sender, EventArgs e)
@@ -89,9 +92,7 @@ namespace Cap10Slog
                 lta.Hide = false;
             }
 
-            this.filterDataGridView.Refresh();
-            this.okButton.Enabled = true;
-            this.applyButton.Enabled = true;
+            SelectedOptionsChanged();
         }
 
         private void searchTermTextBox_TextChanged(object sender, EventArgs e)
@@ -110,9 +111,7 @@ namespace Cap10Slog
                 }
             }
 
-            this.filterDataGridView.Refresh();
-            this.okButton.Enabled = true;
-            this.applyButton.Enabled = true;
+            SelectedOptionsChanged();
         }
 
         private void searchTermFilterButton_Click(object sender, EventArgs e)
@@ -125,9 +124,35 @@ namespace Cap10Slog
                 }
             }
 
-            this.filterDataGridView.Refresh();
-            this.okButton.Enabled = true;
-            this.applyButton.Enabled = true;
+            SelectedOptionsChanged();
+        }
+
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                lta.ApplyChanges();
+            }
+
+            this.okButton.Enabled = false;
+            this.applyButton.Enabled = false;
+
+            this.HideOrFilterChanged(this, EventArgs.Empty);
+
+            this.Close();
+        }
+
+        private void applyButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                lta.ApplyChanges();
+            }
+
+            this.okButton.Enabled = false;
+            this.applyButton.Enabled = false;
+
+            this.HideOrFilterChanged(this, EventArgs.Empty);
         }
 
     }
@@ -141,29 +166,64 @@ namespace Cap10Slog
             this.logThread = logThread;
         }
 
+        private bool hideOverrideFlag = false;
+        private bool hideOverride = false;
         public bool Hide
         {
             get
             {
-                return this.logThread.Hidden;
+                if (this.hideOverrideFlag)
+                {
+                    return this.hideOverride;
+                }
+                else
+                {
+                    return this.logThread.Hidden;
+                }
             }
 
             set
             {
-                this.logThread.Hidden = value;
+                this.hideOverrideFlag = true;
+                this.hideOverride = value;
             }
         }
 
+        private bool filterOverrideFlag = false;
+        private bool filterOverride = false;
         public bool Filter
         {
             get
             {
-                return this.logThread.Filtered;
+                if (this.filterOverrideFlag)
+                {
+                    return this.filterOverride;
+                }
+                else
+                {
+                    return this.logThread.Filtered;
+                }
             }
 
             set
             {
-                this.logThread.Filtered = value;
+                this.filterOverrideFlag = true;
+                this.filterOverride = value;
+            }
+        }
+
+        public void ApplyChanges()
+        {
+            if ( this.hideOverrideFlag )
+            {
+                this.logThread.Hidden = this.hideOverride;
+                this.hideOverrideFlag = false;
+            }
+
+            if (this.filterOverrideFlag)
+            {
+                this.logThread.Filtered = this.filterOverride;
+                this.filterOverrideFlag = false;
             }
         }
 
