@@ -45,6 +45,91 @@ namespace Cap10Slog
                 }
             }
         }
+
+        private void filterAllButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                lta.Filter = true;
+            }
+
+            this.filterDataGridView.Refresh();
+            this.okButton.Enabled = true;
+            this.applyButton.Enabled = true;
+        }
+
+        private void hideAllButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                lta.Hide = true;
+            }
+
+            this.filterDataGridView.Refresh();
+            this.okButton.Enabled = true;
+            this.applyButton.Enabled = true;
+        }
+
+        private void filterNoneButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                lta.Filter = false;
+            }
+
+            this.filterDataGridView.Refresh();
+            this.okButton.Enabled = true;
+            this.applyButton.Enabled = true;
+        }
+
+        private void hideNoneButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                lta.Hide = false;
+            }
+
+            this.filterDataGridView.Refresh();
+            this.okButton.Enabled = true;
+            this.applyButton.Enabled = true;
+        }
+
+        private void searchTermTextBox_TextChanged(object sender, EventArgs e)
+        {
+            this.searchTermFilterButton.Enabled = (0 < this.searchTermTextBox.Text.Length);
+            this.searchTermHideButton.Enabled = (0 < this.searchTermTextBox.Text.Length);
+        }
+
+        private void searchTermHideButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                if ( lta.GetLogThread().LogRecords.Find( lr => lr.Data.Contains(this.searchTermTextBox.Text) ) != null )
+                {
+                    lta.Hide = false;
+                }
+            }
+
+            this.filterDataGridView.Refresh();
+            this.okButton.Enabled = true;
+            this.applyButton.Enabled = true;
+        }
+
+        private void searchTermFilterButton_Click(object sender, EventArgs e)
+        {
+            foreach (LogThreadAdapter lta in (this.filterDataGridView.DataSource as BindingSource).DataSource as IEnumerable<LogThreadAdapter>)
+            {
+                if (lta.GetLogThread().LogRecords.Find(lr => lr.Data.Contains(this.searchTermTextBox.Text)) != null)
+                {
+                    lta.Filter = false;
+                }
+            }
+
+            this.filterDataGridView.Refresh();
+            this.okButton.Enabled = true;
+            this.applyButton.Enabled = true;
+        }
+
     }
 
     class LogThreadAdapter
@@ -89,6 +174,12 @@ namespace Cap10Slog
                 return this.logThread.ThreadID;
             }
         }
+
+        public LogThread GetLogThread()
+        {
+            return this.logThread;
+        }
+
 
     }
 }

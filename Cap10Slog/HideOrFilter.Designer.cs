@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.filterDataGridView = new System.Windows.Forms.DataGridView();
+            this.hide = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.filter = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.thread = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.hideAllButton = new System.Windows.Forms.Button();
             this.hideNoneButton = new System.Windows.Forms.Button();
             this.filterAllButton = new System.Windows.Forms.Button();
@@ -40,9 +43,6 @@
             this.searchTermFilterButton = new System.Windows.Forms.Button();
             this.searchTermHideButton = new System.Windows.Forms.Button();
             this.applyButton = new System.Windows.Forms.Button();
-            this.hide = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.filter = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.thread = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.filterDataGridView)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -69,45 +69,68 @@
             this.filterDataGridView.Size = new System.Drawing.Size(460, 451);
             this.filterDataGridView.TabIndex = 0;
             // 
+            // hide
+            // 
+            this.hide.DataPropertyName = "Hide";
+            this.hide.HeaderText = "Hide From Text View";
+            this.hide.Name = "hide";
+            // 
+            // filter
+            // 
+            this.filter.DataPropertyName = "Filter";
+            this.filter.HeaderText = "Filter From Timeline";
+            this.filter.Name = "filter";
+            // 
+            // thread
+            // 
+            this.thread.DataPropertyName = "ThreadID";
+            this.thread.HeaderText = "Thread ID";
+            this.thread.Name = "thread";
+            this.thread.ReadOnly = true;
+            // 
             // hideAllButton
             // 
-            this.hideAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.hideAllButton.Location = new System.Drawing.Point(142, 469);
+            this.hideAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.hideAllButton.Location = new System.Drawing.Point(268, 469);
             this.hideAllButton.Name = "hideAllButton";
             this.hideAllButton.Size = new System.Drawing.Size(75, 23);
             this.hideAllButton.TabIndex = 1;
             this.hideAllButton.Text = "Hide All";
             this.hideAllButton.UseVisualStyleBackColor = true;
+            this.hideAllButton.Click += new System.EventHandler(this.hideAllButton_Click);
             // 
             // hideNoneButton
             // 
             this.hideNoneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.hideNoneButton.Location = new System.Drawing.Point(269, 469);
+            this.hideNoneButton.Location = new System.Drawing.Point(396, 469);
             this.hideNoneButton.Name = "hideNoneButton";
             this.hideNoneButton.Size = new System.Drawing.Size(75, 23);
             this.hideNoneButton.TabIndex = 2;
             this.hideNoneButton.Text = "Hide None";
             this.hideNoneButton.UseVisualStyleBackColor = true;
+            this.hideNoneButton.Click += new System.EventHandler(this.hideNoneButton_Click);
             // 
             // filterAllButton
             // 
             this.filterAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.filterAllButton.Location = new System.Drawing.Point(15, 469);
+            this.filterAllButton.Location = new System.Drawing.Point(12, 469);
             this.filterAllButton.Name = "filterAllButton";
             this.filterAllButton.Size = new System.Drawing.Size(75, 23);
             this.filterAllButton.TabIndex = 3;
             this.filterAllButton.Text = "Filter All";
             this.filterAllButton.UseVisualStyleBackColor = true;
+            this.filterAllButton.Click += new System.EventHandler(this.filterAllButton_Click);
             // 
             // filterNoneButton
             // 
-            this.filterNoneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.filterNoneButton.Location = new System.Drawing.Point(396, 469);
+            this.filterNoneButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.filterNoneButton.Location = new System.Drawing.Point(140, 469);
             this.filterNoneButton.Name = "filterNoneButton";
             this.filterNoneButton.Size = new System.Drawing.Size(75, 23);
             this.filterNoneButton.TabIndex = 4;
             this.filterNoneButton.Text = "Filter None";
             this.filterNoneButton.UseVisualStyleBackColor = true;
+            this.filterNoneButton.Click += new System.EventHandler(this.filterNoneButton_Click);
             // 
             // cancelButton
             // 
@@ -122,6 +145,7 @@
             // okButton
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.Enabled = false;
             this.okButton.Location = new System.Drawing.Point(235, 565);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
@@ -151,55 +175,42 @@
             this.searchTermTextBox.Name = "searchTermTextBox";
             this.searchTermTextBox.Size = new System.Drawing.Size(257, 20);
             this.searchTermTextBox.TabIndex = 10;
+            this.searchTermTextBox.TextChanged += new System.EventHandler(this.searchTermTextBox_TextChanged);
             // 
             // searchTermFilterButton
             // 
             this.searchTermFilterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.searchTermFilterButton.Enabled = false;
             this.searchTermFilterButton.Location = new System.Drawing.Point(363, 19);
             this.searchTermFilterButton.Name = "searchTermFilterButton";
             this.searchTermFilterButton.Size = new System.Drawing.Size(75, 23);
             this.searchTermFilterButton.TabIndex = 9;
             this.searchTermFilterButton.Text = "Filter";
             this.searchTermFilterButton.UseVisualStyleBackColor = true;
+            this.searchTermFilterButton.Click += new System.EventHandler(this.searchTermFilterButton_Click);
             // 
             // searchTermHideButton
             // 
             this.searchTermHideButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.searchTermHideButton.Enabled = false;
             this.searchTermHideButton.Location = new System.Drawing.Point(276, 19);
             this.searchTermHideButton.Name = "searchTermHideButton";
             this.searchTermHideButton.Size = new System.Drawing.Size(75, 23);
             this.searchTermHideButton.TabIndex = 8;
             this.searchTermHideButton.Text = "Hide";
             this.searchTermHideButton.UseVisualStyleBackColor = true;
+            this.searchTermHideButton.Click += new System.EventHandler(this.searchTermHideButton_Click);
             // 
             // applyButton
             // 
             this.applyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.applyButton.Enabled = false;
             this.applyButton.Location = new System.Drawing.Point(397, 565);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 8;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
-            // 
-            // hide
-            // 
-            this.hide.DataPropertyName = "Hide";
-            this.hide.HeaderText = "Hide From Text View";
-            this.hide.Name = "hide";
-            // 
-            // filter
-            // 
-            this.filter.DataPropertyName = "Filter";
-            this.filter.HeaderText = "Filter From Timeline";
-            this.filter.Name = "filter";
-            // 
-            // thread
-            // 
-            this.thread.DataPropertyName = "ThreadID";
-            this.thread.HeaderText = "Thread ID";
-            this.thread.Name = "thread";
-            this.thread.ReadOnly = true;
             // 
             // HideOrFilter
             // 
